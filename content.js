@@ -48,25 +48,32 @@ class TiltBreaker {
   loadData() {
     return new Promise((resolve) => {
       if (chrome && chrome.storage) {
-        // If resetOnClose is enabled, wipe session data on every page load
+        // resetOnClose: only wipe on a fresh tab/window, NOT on reload.
+        // sessionStorage survives reloads but clears when the tab closes.
         if (this.settings.resetOnClose) {
-          console.log("resetOnClose is enabled — clearing session data.");
-          this.gameData = {
-            sessionStartTime: Date.now(),
-            totalGames: 0,
-            wins: 0,
-            losses: 0,
-            draws: 0,
-            consecutiveLosses: 0,
-            currentStreak: 0,
-            maxWinStreak: 0,
-            processedGames: new Set(),
-            hasUsedContinue: false,
-            lastActivityTime: Date.now()
-          };
-          this.saveData();
-          resolve();
-          return;
+          const isReload = sessionStorage.getItem('tiltBreakerSessionActive');
+          if (!isReload) {
+            // Fresh tab — clear session data
+            console.log("resetOnClose: fresh tab detected — clearing session data.");
+            this.gameData = {
+              sessionStartTime: Date.now(),
+              totalGames: 0,
+              wins: 0,
+              losses: 0,
+              draws: 0,
+              consecutiveLosses: 0,
+              currentStreak: 0,
+              maxWinStreak: 0,
+              processedGames: new Set(),
+              hasUsedContinue: false,
+              lastActivityTime: Date.now()
+            };
+            this.saveData();
+          } else {
+            console.log("resetOnClose: page reload detected — keeping session data.");
+          }
+          // Mark this tab as having an active session
+          sessionStorage.setItem('tiltBreakerSessionActive', 'true');
         }
 
         chrome.storage.local.get(['tiltBreakerData'], (result) => {

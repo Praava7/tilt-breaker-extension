@@ -1,0 +1,374 @@
+/* Tilt Breaker Extension Styles - Copy this EXACTLY into styles.css */
+
+.tilt-breaker-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tilt-popup-content {
+  background: #2c2c2c;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  color: white;
+  overflow: hidden;
+  animation: tiltPopupSlideIn 0.3s ease-out;
+}
+
+@keyframes tiltPopupSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tilt-popup-header {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tilt-popup-header h2 {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.tilt-popup-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.tilt-popup-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tilt-popup-body {
+  padding: 25px;
+}
+
+.tilt-popup-body p {
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  color: #ecf0f1;
+}
+
+.tilt-popup-stats {
+  background: #34495e;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.stat:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  color: #bdc3c7;
+}
+
+.stat-value {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.tilt-popup-actions {
+  padding: 0 25px 25px 25px;
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.tilt-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.tilt-btn-continue {
+  background: #f39c12;
+  color: white;
+}
+
+.tilt-btn-continue:hover {
+  background: #e67e22;
+  transform: translateY(-1px);
+}
+
+.tilt-btn-rest {
+  background: #27ae60;
+  color: white;
+}
+
+.tilt-btn-rest:hover {
+  background: #229954;
+  transform: translateY(-1px);
+}
+
+.tilt-breaker-cooldown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.cooldown-content {
+  text-align: center;
+  color: white;
+  max-width: 600px;
+  padding: 40px;
+}
+
+.cooldown-icon {
+  font-size: 4em;
+  margin-bottom: 20px;
+  animation: cooldownPulse 2s infinite;
+}
+
+@keyframes cooldownPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.cooldown-content h2 {
+  font-size: 2.5em;
+  margin: 0 0 15px 0;
+  font-weight: 300;
+}
+
+.cooldown-content p {
+  font-size: 1.2em;
+  margin: 0 0 25px 0;
+  opacity: 0.9;
+}
+
+.cooldown-timer {
+  font-size: 1.5em;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 15px 25px;
+  border-radius: 25px;
+  margin: 20px 0 30px 0;
+  display: inline-block;
+}
+
+.cooldown-suggestions {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 30px;
+}
+
+.cooldown-suggestions h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.3em;
+}
+
+.cooldown-suggestions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cooldown-suggestions li {
+  padding: 8px 0;
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+.tilt-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #2c3e50;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 350px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  z-index: 9999;
+  animation: notificationSlideIn 0.3s ease-out;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@keyframes notificationSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tilt-notification-warning {
+  background: #f39c12;
+  border-left: 4px solid #e67e22;
+}
+
+.tilt-notification-info {
+  background: #3498db;
+  border-left: 4px solid #2980b9;
+}
+
+.tilt-notification-success {
+  background: #27ae60;
+  border-left: 4px solid #229954;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-content strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 1em;
+}
+
+.notification-content p {
+  margin: 0;
+  font-size: 0.9em;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+  opacity: 1;
+}
+
+.tilt-stats-display {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: rgba(44, 62, 80, 0.95);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: opacity 0.3s;
+}
+
+.tilt-stats-display:hover {
+  opacity: 0.7;
+}
+
+.stats-header {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.9em;
+  color: #3498db;
+}
+
+.stats-row {
+  margin-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+  min-width: 120px;
+}
+
+.stats-row:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .tilt-popup-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .tilt-popup-header {
+    padding: 15px;
+  }
+  
+  .tilt-popup-body {
+    padding: 20px;
+  }
+  
+  .tilt-popup-actions {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .tilt-notification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .tilt-stats-display {
+    top: 60px;
+    right: 10px;
+    font-size: 0.8em;
+  }
+  
+  .cooldown-content {
+    padding: 20px;
+  }
+  
+  .cooldown-content h2 {
+    font-size: 2em;
+  }
+}

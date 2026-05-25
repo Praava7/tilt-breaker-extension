@@ -1,0 +1,80 @@
+Tilt Breaker - Chess Tilt Prevention Extension
+Project Overview
+A browser extension that helps chess players manage tilt by automatically detecting consecutive losses on Lichess.org and providing intervention mechanisms to prevent emotional decision-making that leads to rating drops and poor play quality.
+Core Functionality
+Automatic Game Tracking:
+
+Monitors chess games on Lichess in real-time
+Detects game results (win/loss/draw) by analyzing DOM content
+Tracks consecutive loss streaks and session statistics
+Maintains session data with automatic cleanup
+
+Tilt Intervention System:
+
+Triggers alerts after configurable consecutive losses (default: 3)
+Presents two-choice intervention popup: "One more game" or "Take a break"
+Forces site closure if user loses after choosing "one more game"
+Implements cooldown periods with activity suggestions
+
+Session Management:
+
+Automatically starts new sessions
+Resets data on browser close, tab inactivity, or after 24 hours
+No persistent lifetime statistics to encourage fresh starts
+
+Current Development Status
+Working Features:
+
+Basic game result detection
+Consecutive loss tracking
+Intervention popup system
+Chrome extension infrastructure
+Settings management interface
+
+Known Limitations Requiring Resolution:
+Technical Issues:
+
+Player color detection reliability (currently assumes white pieces)
+Game result parsing depends on specific DOM text patterns
+Chrome storage vs localStorage inconsistencies across components
+Extension context invalidation during development cycles
+
+Robustness Gaps:
+
+Limited board theme compatibility testing
+Insufficient fallback methods for game detection
+No error reporting or diagnostic logging
+Vulnerable to Lichess interface changes
+
+Cross-Platform Constraints:
+
+Chrome/Edge only (Manifest V3)
+Requires Firefox conversion for broader compatibility
+Missing Safari support entirely
+
+Production Readiness Requirements
+Critical Development Tasks:
+
+Implement reliable player color detection across all board orientations
+Create robust game result detection with multiple fallback methods
+Unify storage system across all extension components
+Add comprehensive error handling and user feedback
+Develop Firefox-compatible version using WebExtensions API
+
+Quality Assurance Needs:
+
+Testing across different Lichess themes and board orientations
+Validation with various game ending conditions
+Performance impact assessment
+User experience testing for intervention effectiveness
+
+Maintenance Considerations:
+
+DOM selector updates when Lichess changes interface
+Browser API compatibility maintenance
+User feedback integration system
+Update distribution mechanism
+
+Target Outcome
+A reliable, cross-browser extension that demonstrably helps chess players avoid tilt-induced rating loss by providing timely, effective interventions during consecutive loss streaks. The extension should operate transparently without affecting normal gameplay while providing measurable tilt prevention benefits.
+The project represents a practical application of behavioral intervention technology to competitive gaming, with potential applicability to other skill-based online activities where emotional regulation affects performance.

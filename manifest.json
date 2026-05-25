@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Tilt Breaker - Chess Tilt Prevention",
+  "version": "1.0.0",
+  "description": "Prevents chess tilt by tracking consecutive losses and providing intervention popups on Lichess",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://lichess.org/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://lichess.org/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tilt Breaker Settings"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

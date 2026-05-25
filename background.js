@@ -19,7 +19,8 @@ chrome.runtime.onInstalled.addListener(() => {
           "Time to analyze instead of playing 📚"
         ],
         enableStats: true,
-        enableGentleWarnings: true
+        enableGentleWarnings: true,
+        resetOnClose: false
       };
       
       chrome.storage.sync.set({ tiltBreakerSettings: defaultSettings });

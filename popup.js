@@ -16,7 +16,8 @@ class TiltBreakerPopup {
         "Time to analyze instead of playing 📚"
       ],
       enableStats: true,
-      enableGentleWarnings: true
+      enableGentleWarnings: true,
+      resetOnClose: false
     };
     
     this.gameData = {

@@ -24,7 +24,9 @@ class TiltBreaker {
         "Step away from the board and reset",
         "Your rating will thank you for this pause"
       ],
-      enableCooldown: true
+      enableCooldown: true,
+      enableGentleWarnings: true,
+      resetOnClose: false
     };
     
     this.playerColor = null;
@@ -33,8 +35,10 @@ class TiltBreaker {
   }
 
   init() {
-    // Load both data and settings before starting
-    Promise.all([this.loadData(), this.loadSettings()]).then(() => {
+    // Load settings first (needed to decide whether to reset data on load)
+    this.loadSettings().then(() => {
+      return this.loadData();
+    }).then(() => {
       this.detectPlayerColor();
       this.setupGameMonitoring();
       console.log("Tilt Breaker ready");
@@ -44,6 +48,27 @@ class TiltBreaker {
   loadData() {
     return new Promise((resolve) => {
       if (chrome && chrome.storage) {
+        // If resetOnClose is enabled, wipe session data on every page load
+        if (this.settings.resetOnClose) {
+          console.log("resetOnClose is enabled — clearing session data.");
+          this.gameData = {
+            sessionStartTime: Date.now(),
+            totalGames: 0,
+            wins: 0,
+            losses: 0,
+            draws: 0,
+            consecutiveLosses: 0,
+            currentStreak: 0,
+            maxWinStreak: 0,
+            processedGames: new Set(),
+            hasUsedContinue: false,
+            lastActivityTime: Date.now()
+          };
+          this.saveData();
+          resolve();
+          return;
+        }
+
         chrome.storage.local.get(['tiltBreakerData'], (result) => {
           if (chrome.runtime.lastError) {
             console.warn("Storage error:", chrome.runtime.lastError);
@@ -53,7 +78,7 @@ class TiltBreaker {
           
           if (result.tiltBreakerData) {
             const data = result.tiltBreakerData;
-            // Bug 5: Reset hasUsedContinue if this is a new browser session
+            // Reset hasUsedContinue if this is a new browser session
             // (session is considered new if >12h have passed since last activity)
             const SESSION_TIMEOUT_MS = 12 * 60 * 60 * 1000;
             const isNewSession = !data.lastActivityTime ||
@@ -93,6 +118,8 @@ class TiltBreaker {
             if (s.maxConsecutiveLosses) this.settings.maxConsecutiveLosses = s.maxConsecutiveLosses;
             if (s.cooldownMinutes)      this.settings.cooldownMinutes = s.cooldownMinutes;
             if (s.enableCooldown !== undefined) this.settings.enableCooldown = s.enableCooldown;
+            if (s.enableGentleWarnings !== undefined) this.settings.enableGentleWarnings = s.enableGentleWarnings;
+            if (s.resetOnClose !== undefined) this.settings.resetOnClose = s.resetOnClose;
             if (Array.isArray(s.customMessages) && s.customMessages.length > 0) {
               this.settings.customMessages = s.customMessages;
             }
@@ -266,7 +293,18 @@ class TiltBreaker {
         return;
       }
       
-      // Check for tilt intervention
+      // Gentle warning: show a soft notification 1 loss before tilt threshold
+      if (this.settings.enableGentleWarnings &&
+          this.gameData.consecutiveLosses === this.settings.maxConsecutiveLosses - 1 &&
+          this.gameData.consecutiveLosses >= 2) {
+        this.showNotification(
+          "⚠️ Heads Up",
+          `You've lost ${this.gameData.consecutiveLosses} in a row. One more loss will trigger a tilt break.`,
+          "warning"
+        );
+      }
+
+      // Full tilt intervention
       if (this.gameData.consecutiveLosses >= this.settings.maxConsecutiveLosses) {
         this.showTiltPopup();
       }

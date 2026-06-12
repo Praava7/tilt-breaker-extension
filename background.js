@@ -28,14 +28,33 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Allowlist of valid message actions
+const VALID_ACTIONS = new Set(['closeTab', 'getTabInfo', 'updateBadge']);
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Secure message passing: validate action against allowlist
+  if (!request || typeof request.action !== 'string' || !VALID_ACTIONS.has(request.action)) {
+    sendResponse({ error: 'Invalid action' });
+    return true;
+  }
+
   if (request.action === 'closeTab') {
-    chrome.tabs.remove(sender.tab.id);
+    if (sender.tab && typeof sender.tab.id === 'number') {
+      chrome.tabs.remove(sender.tab.id);
+    }
     sendResponse({ success: true });
   } else if (request.action === 'getTabInfo') {
-    sendResponse({ tabId: sender.tab.id });
+    sendResponse({ tabId: sender.tab ? sender.tab.id : null });
   } else if (request.action === 'updateBadge') {
-    const { consecutiveLosses } = request.data;
+    // Validate data payload type and range
+    const data = request.data;
+    if (!data || typeof data.consecutiveLosses !== 'number' ||
+        !Number.isInteger(data.consecutiveLosses) || data.consecutiveLosses < 0 || data.consecutiveLosses > 999) {
+      sendResponse({ error: 'Invalid data payload' });
+      return true;
+    }
+
+    const { consecutiveLosses } = data;
     
     if (consecutiveLosses > 0) {
       chrome.action.setBadgeText({
@@ -59,7 +78,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     sendResponse({ success: true });
   }
-  // Keep message channel open for any async sendResponse calls
   return true;
 });
 

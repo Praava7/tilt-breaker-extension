@@ -354,47 +354,83 @@ class TiltBreaker {
       background: rgba(0,0,0,0.8); display: flex; justify-content: center;
       align-items: center; z-index: 10000; font-family: system-ui;
     `;
-    
+
     const message = this.settings.customMessages[
       Math.floor(Math.random() * this.settings.customMessages.length)
     ];
-    
-    popup.innerHTML = `
-      <div style="background: #2c2c2c; border-radius: 12px; max-width: 500px;
-                  width: 90%; color: white; padding: 30px; text-align: center;">
-        <h2 style="color: #e74c3c; margin: 0 0 20px;">Tilt Alert!</h2>
-        <p>You've lost ${this.gameData.consecutiveLosses} games in a row.</p>
-        <p style="font-style: italic; color: #bdc3c7;">${message}</p>
-        <div style="margin: 30px 0; padding: 15px; background: #34495e; border-radius: 8px;">
-          <div style="margin-bottom: 8px;">
-            <span>Consecutive Losses:</span>
-            <span style="color: #e74c3c; font-weight: bold; float: right;">${this.gameData.consecutiveLosses}</span>
-          </div>
-          <div>
-            <span>Session W/L/D:</span>
-            <span style="color: #3498db; font-weight: bold; float: right;">${this.gameData.wins}/${this.gameData.losses}/${this.gameData.draws}</span>
-          </div>
-        </div>
-        <button id="continue" style="padding: 12px 20px; margin: 10px; border: none;
-                                     border-radius: 6px; background: #f39c12; color: white; cursor: pointer;
-                                     display: block; width: calc(100% - 20px);">
-          I'm fine, let me play one more match
-        </button>
-        <button id="rest" style="padding: 12px 20px; margin: 10px; border: none;
-                                border-radius: 6px; background: #27ae60; color: white; cursor: pointer;
-                                display: block; width: calc(100% - 20px);">
-          Yeah, let's take a rest for a while
-        </button>
-      </div>
-    `;
-    
+
+    // Card container
+    const card = document.createElement('div');
+    card.style.cssText = 'background: #2c2c2c; border-radius: 12px; max-width: 500px; width: 90%; color: white; padding: 30px; text-align: center;';
+
+    // Title
+    const h2 = document.createElement('h2');
+    h2.style.cssText = 'color: #e74c3c; margin: 0 0 20px;';
+    h2.textContent = 'Tilt Alert!';
+    card.appendChild(h2);
+
+    // Loss count message
+    const lossP = document.createElement('p');
+    lossP.textContent = "You've lost " + this.gameData.consecutiveLosses + " games in a row.";
+    card.appendChild(lossP);
+
+    // Custom message
+    const msgP = document.createElement('p');
+    msgP.style.cssText = 'font-style: italic; color: #bdc3c7;';
+    msgP.textContent = message;
+    card.appendChild(msgP);
+
+    // Stats container
+    const statsDiv = document.createElement('div');
+    statsDiv.style.cssText = 'margin: 30px 0; padding: 15px; background: #34495e; border-radius: 8px;';
+
+    // Consecutive Losses row
+    const lossRow = document.createElement('div');
+    lossRow.style.cssText = 'margin-bottom: 8px;';
+    const lossLabel = document.createElement('span');
+    lossLabel.textContent = 'Consecutive Losses:';
+    const lossValue = document.createElement('span');
+    lossValue.style.cssText = 'color: #e74c3c; font-weight: bold; float: right;';
+    lossValue.textContent = this.gameData.consecutiveLosses;
+    lossRow.appendChild(lossLabel);
+    lossRow.appendChild(lossValue);
+    statsDiv.appendChild(lossRow);
+
+    // Session W/L/D row
+    const wldRow = document.createElement('div');
+    const wldLabel = document.createElement('span');
+    wldLabel.textContent = 'Session W/L/D:';
+    const wldValue = document.createElement('span');
+    wldValue.style.cssText = 'color: #3498db; font-weight: bold; float: right;';
+    wldValue.textContent = this.gameData.wins + '/' + this.gameData.losses + '/' + this.gameData.draws;
+    wldRow.appendChild(wldLabel);
+    wldRow.appendChild(wldValue);
+    statsDiv.appendChild(wldRow);
+
+    card.appendChild(statsDiv);
+
+    // Continue button
+    const continueBtn = document.createElement('button');
+    continueBtn.id = 'tilt-continue-btn';
+    continueBtn.style.cssText = 'padding: 12px 20px; margin: 10px; border: none; border-radius: 6px; background: #f39c12; color: white; cursor: pointer; display: block; width: calc(100% - 20px);';
+    continueBtn.textContent = "I'm fine, let me play one more match";
+    card.appendChild(continueBtn);
+
+    // Rest button
+    const restBtn = document.createElement('button');
+    restBtn.id = 'tilt-rest-btn';
+    restBtn.style.cssText = 'padding: 12px 20px; margin: 10px; border: none; border-radius: 6px; background: #27ae60; color: white; cursor: pointer; display: block; width: calc(100% - 20px);';
+    restBtn.textContent = "Yeah, let's take a rest for a while";
+    card.appendChild(restBtn);
+
+    popup.appendChild(card);
     document.body.appendChild(popup);
-    
-    document.getElementById('continue').onclick = () => {
+
+    document.getElementById('tilt-continue-btn').onclick = () => {
       this.gameData.hasUsedContinue = true;
       this.saveData();
       popup.remove();
-      
+
       // Show warning notification
       this.showNotification(
         "One More Chance",
@@ -402,8 +438,8 @@ class TiltBreaker {
         "warning"
       );
     };
-    
-    document.getElementById('rest').onclick = () => {
+
+    document.getElementById('tilt-rest-btn').onclick = () => {
       popup.remove();
       if (this.settings.enableCooldown) {
         this.startCooldown();
@@ -421,16 +457,22 @@ class TiltBreaker {
       color: white; padding: 15px 20px; border-radius: 8px; z-index: 9999;
       max-width: 350px; font-family: system-ui; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     `;
-    
-    notification.innerHTML = `
-      <div>
-        <strong style="display: block; margin-bottom: 5px;">${title}</strong>
-        <p style="margin: 0; font-size: 0.9em;">${message}</p>
-      </div>
-    `;
-    
+
+    const wrapper = document.createElement('div');
+
+    const strong = document.createElement('strong');
+    strong.style.cssText = 'display: block; margin-bottom: 5px;';
+    strong.textContent = title;
+    wrapper.appendChild(strong);
+
+    const p = document.createElement('p');
+    p.style.cssText = 'margin: 0; font-size: 0.9em;';
+    p.textContent = message;
+    wrapper.appendChild(p);
+
+    notification.appendChild(wrapper);
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
       if (notification.parentElement) {
         notification.remove();
@@ -440,7 +482,7 @@ class TiltBreaker {
 
   startCooldown() {
     const cooldownEnd = Date.now() + (this.settings.cooldownMinutes * 60 * 1000);
-    
+
     const cooldownScreen = document.createElement('div');
     cooldownScreen.id = 'tilt-cooldown';
     cooldownScreen.style.cssText = `
@@ -449,29 +491,62 @@ class TiltBreaker {
       display: flex; justify-content: center; align-items: center; z-index: 10000;
       font-family: system-ui; color: white; text-align: center;
     `;
-    
-    cooldownScreen.innerHTML = `
-      <div style="max-width: 600px; padding: 40px;">
-        <div style="font-size: 4em; margin-bottom: 20px;">⏳</div>
-        <h2 style="font-size: 2.5em; margin: 0 0 15px 0;">Cooling Down</h2>
-        <p style="font-size: 1.2em; margin: 0 0 25px 0;">Take a ${this.settings.cooldownMinutes}-minute break to reset your mindset.</p>
-        <div id="cooldown-timer" style="font-size: 1.5em; font-weight: 600; background: rgba(255,255,255,0.2);
-                                        padding: 15px 25px; border-radius: 25px; margin: 20px 0 30px 0; display: inline-block;">
-          ${this.settings.cooldownMinutes} minutes remaining
-        </div>
-        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 25px; margin-top: 30px; text-align: left;">
-          <h3 style="margin: 0 0 15px 0; text-align: center;">Try these activities:</h3>
-          <div>🧘‍♂️ Take deep breaths or meditate</div>
-          <div>📚 Analyze your recent games</div>
-          <div>☕ Get a drink or snack</div>
-          <div>🚶‍♂️ Take a short walk</div>
-          <div>🧩 Solve some chess puzzles</div>
-        </div>
-      </div>
-    `;
-    
+
+    // Outer wrapper
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'max-width: 600px; padding: 40px;';
+
+    // Emoji
+    const emojiDiv = document.createElement('div');
+    emojiDiv.style.cssText = 'font-size: 4em; margin-bottom: 20px;';
+    emojiDiv.textContent = '⏳';
+    wrapper.appendChild(emojiDiv);
+
+    // Heading
+    const h2 = document.createElement('h2');
+    h2.style.cssText = 'font-size: 2.5em; margin: 0 0 15px 0;';
+    h2.textContent = 'Cooling Down';
+    wrapper.appendChild(h2);
+
+    // Break message
+    const breakP = document.createElement('p');
+    breakP.style.cssText = 'font-size: 1.2em; margin: 0 0 25px 0;';
+    breakP.textContent = 'Take a ' + this.settings.cooldownMinutes + '-minute break to reset your mindset.';
+    wrapper.appendChild(breakP);
+
+    // Timer
+    const timerDiv = document.createElement('div');
+    timerDiv.id = 'cooldown-timer';
+    timerDiv.style.cssText = 'font-size: 1.5em; font-weight: 600; background: rgba(255,255,255,0.2); padding: 15px 25px; border-radius: 25px; margin: 20px 0 30px 0; display: inline-block;';
+    timerDiv.textContent = this.settings.cooldownMinutes + ' minutes remaining';
+    wrapper.appendChild(timerDiv);
+
+    // Activities container
+    const activitiesDiv = document.createElement('div');
+    activitiesDiv.style.cssText = 'background: rgba(255,255,255,0.1); border-radius: 12px; padding: 25px; margin-top: 30px; text-align: left;';
+
+    const activitiesH3 = document.createElement('h3');
+    activitiesH3.style.cssText = 'margin: 0 0 15px 0; text-align: center;';
+    activitiesH3.textContent = 'Try these activities:';
+    activitiesDiv.appendChild(activitiesH3);
+
+    const activities = [
+      '🧘‍♂️ Take deep breaths or meditate',
+      '📚 Analyze your recent games',
+      '☕ Get a drink or snack',
+      '🚶‍♂️ Take a short walk',
+      '🧩 Solve some chess puzzles'
+    ];
+    activities.forEach(text => {
+      const actDiv = document.createElement('div');
+      actDiv.textContent = text;
+      activitiesDiv.appendChild(actDiv);
+    });
+
+    wrapper.appendChild(activitiesDiv);
+    cooldownScreen.appendChild(wrapper);
     document.body.appendChild(cooldownScreen);
-    
+
     // Update timer — store ID so we can clear it when done
     let cooldownIntervalId;
     const updateTimer = () => {
@@ -485,14 +560,14 @@ class TiltBreaker {
         this.showNotification("Cooldown Complete!", "You can now play with a fresh mindset. Good luck!", "success");
         return;
       }
-      
+
       const minutes = Math.ceil(remaining / (1000 * 60));
       const timer = document.getElementById('cooldown-timer');
       if (timer) {
         timer.textContent = `${minutes} minute${minutes !== 1 ? 's' : ''} remaining`;
       }
     };
-    
+
     cooldownIntervalId = setInterval(updateTimer, 1000);
     updateTimer();
   }
@@ -516,25 +591,28 @@ class TiltBreaker {
 const tiltBreaker = new TiltBreaker();
 window.tiltBreaker = tiltBreaker;
 
-// Bug 7: Handle 'resetStats' sent from the popup so in-memory state stays in sync
+// Handle messages from the popup — validate action before processing
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'resetStats') {
-    tiltBreaker.gameData = {
-      sessionStartTime: Date.now(),
-      totalGames: 0,
-      wins: 0,
-      losses: 0,
-      draws: 0,
-      consecutiveLosses: 0,
-      currentStreak: 0,
-      maxWinStreak: 0,
-      processedGames: new Set(),
-      hasUsedContinue: false,
-      lastActivityTime: Date.now()
-    };
-    tiltBreaker.saveData();
-    tiltBreaker.updateBadge();
-    sendResponse({ success: true });
+  if (!request || typeof request.action !== 'string' || request.action !== 'resetStats') {
+    sendResponse({ error: 'Invalid action' });
+    return true;
   }
+
+  tiltBreaker.gameData = {
+    sessionStartTime: Date.now(),
+    totalGames: 0,
+    wins: 0,
+    losses: 0,
+    draws: 0,
+    consecutiveLosses: 0,
+    currentStreak: 0,
+    maxWinStreak: 0,
+    processedGames: new Set(),
+    hasUsedContinue: false,
+    lastActivityTime: Date.now()
+  };
+  tiltBreaker.saveData();
+  tiltBreaker.updateBadge();
+  sendResponse({ success: true });
   return true;
 });

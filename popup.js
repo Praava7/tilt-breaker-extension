@@ -104,9 +104,19 @@ class TiltBreakerPopup {
   }
 
   setupEventListeners() {
+    // Allowlist of valid setting keys — prevents prototype pollution
+    const VALID_TOGGLE_SETTINGS = new Set([
+      'enableWinStreakProtection', 'enableTimeLimit', 'enableCooldown',
+      'enableStats', 'enableGentleWarnings', 'resetOnClose'
+    ]);
+    const VALID_NUMBER_SETTINGS = new Set([
+      'maxConsecutiveLosses', 'winStreakThreshold', 'timeLimitHours', 'cooldownMinutes'
+    ]);
+
     document.querySelectorAll('.toggle-switch').forEach(toggle => {
       toggle.addEventListener('click', (e) => {
         const settingName = e.target.id;
+        if (!VALID_TOGGLE_SETTINGS.has(settingName)) return;
         this.settings[settingName] = !this.settings[settingName];
         this.updateToggle(e.target, this.settings[settingName]);
         this.saveSettings();
@@ -116,7 +126,10 @@ class TiltBreakerPopup {
     document.querySelectorAll('input[type="number"]').forEach(input => {
       input.addEventListener('change', (e) => {
         const settingName = e.target.id;
-        this.settings[settingName] = parseFloat(e.target.value);
+        if (!VALID_NUMBER_SETTINGS.has(settingName)) return;
+        const value = parseFloat(e.target.value);
+        if (!Number.isFinite(value)) return;
+        this.settings[settingName] = value;
         this.saveSettings();
       });
     });
@@ -219,15 +232,19 @@ class TiltBreakerPopup {
     this.settings.customMessages.forEach((message, index) => {
       const messageItem = document.createElement('div');
       messageItem.className = 'message-item';
-      
-      // Bug 6: Use data-index attribute instead of inline onclick (CSP-safe)
-      messageItem.innerHTML = `
-        <span style="flex: 1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-          ${this.escapeHtml(message)}
-        </span>
-        <button class="delete-btn" data-index="${index}" aria-label="Remove message">×</button>
-      `;
-      
+
+      const span = document.createElement('span');
+      span.style.cssText = 'flex: 1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;';
+      span.textContent = message; // Safe: textContent, no HTML parsing
+
+      const btn = document.createElement('button');
+      btn.className = 'delete-btn';
+      btn.dataset.index = index;
+      btn.setAttribute('aria-label', 'Remove message');
+      btn.textContent = '\u00d7';
+
+      messageItem.appendChild(span);
+      messageItem.appendChild(btn);
       messageList.appendChild(messageItem);
     });
   }
@@ -243,11 +260,6 @@ class TiltBreakerPopup {
     });
   }
 
-  escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
 
   showStatus(message, type) {
     const statusElement = document.getElementById('statusMessage');

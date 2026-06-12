@@ -5,7 +5,6 @@
   "description": "Prevents chess tilt by tracking consecutive losses and providing intervention popups on Lichess",
   "permissions": [
     "storage",
-    "activeTab",
     "tabs",
     "alarms"
   ],

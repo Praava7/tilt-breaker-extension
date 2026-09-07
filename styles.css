@@ -372,3 +372,26 @@
     font-size: 2em;
   }
 }
+
+/* Feedback button in popup footer */
+.feedback-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 12px;
+  background: transparent;
+  color: #888;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.78em;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  text-align: center;
+}
+
+.feedback-btn:hover {
+  background: #f0f0f0;
+  color: #444;
+  border-color: #bbb;
+}

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tilt Breaker - Chess Tilt Prevention",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Prevents chess tilt by tracking consecutive losses and providing intervention popups on Lichess",
   "permissions": [
     "storage",

@@ -1,4 +1,8 @@
-// Popup Settings Management - Copy this EXACTLY into popup.js
+// Popup Settings Management
+
+// Swap this URL when the final Google Form link is ready
+const FEEDBACK_URL = 'https://forms.gle/EQkUN3gCFXuNzq4Z8';
+
 class TiltBreakerPopup {
   constructor() {
     this.settings = {
@@ -42,7 +46,8 @@ class TiltBreakerPopup {
     await this.loadSettings();
     await this.loadGameData();
     this.setupEventListeners();
-    this.setupMessageListDelegation(); // Bug 6: wire delegated delete handler
+    this.setupMessageListDelegation();
+    this.setupFeedbackButton();
     this.updateUI();
     this.updateStats();
   }
@@ -260,6 +265,13 @@ class TiltBreakerPopup {
     });
   }
 
+  setupFeedbackButton() {
+    const btn = document.getElementById('feedbackBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      chrome.tabs.create({ url: FEEDBACK_URL });
+    });
+  }
 
   showStatus(message, type) {
     const statusElement = document.getElementById('statusMessage');
